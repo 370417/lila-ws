@@ -51,6 +51,14 @@ object ClientOut:
       payload: JsObject
   ) extends ClientOutSite
 
+  case class AnaPass(
+    fen: FEN,
+    path: Path,
+    variant: Variant,
+    chapterId: Option[ChapterId],
+    payload: JsObject
+  ) extends ClientOutSite
+
   case class AnaDests(
       fen: FEN,
       path: Path,
@@ -159,6 +167,14 @@ object ClientOut:
                 variant   = dataVariant(d)
                 chapterId = d str "ch" map ChapterId.apply
               } yield AnaDrop(role, pos, FEN(fen), Path(path), variant, chapterId, o)
+            case "anaPass" =>
+              for {
+                d    <- o obj "d"
+                path <- d str "path"
+                fen  <- d str "fen"
+                variant = dataVariant(d)
+                chapterId = d str "ch" map ChapterId.apply
+              } yield AnaPass(FEN(fen), Path(path), variant, chapterId, o)
             case "anaDests" =>
               for {
                 d    <- o obj "d"

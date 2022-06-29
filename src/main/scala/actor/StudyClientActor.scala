@@ -62,6 +62,11 @@ object StudyClientActor:
             forward(anaDrop.payload)
             Behaviors.same
 
+          case anaPass: ClientOut.AnaPass =>
+            clientIn(Chess(anaPass))
+            forward(anaPass.payload)
+            Behaviors.same
+
           case ClientOut.PalantirPing =>
             deps.req.user map { Palantir.respondToPing(state.room.id, _) } foreach clientIn
             Behaviors.same

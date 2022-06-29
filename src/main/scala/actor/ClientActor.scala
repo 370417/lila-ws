@@ -94,6 +94,10 @@ object ClientActor:
         clientIn(Chess(anaDrop))
         state
 
+      case anaPass: ClientOut.AnaPass =>
+        clientIn(Chess(anaPass))
+        state
+
       case anaDests: ClientOut.AnaDests =>
         clientIn(Chess(anaDests))
         state

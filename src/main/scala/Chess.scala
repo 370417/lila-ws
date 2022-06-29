@@ -45,6 +45,22 @@ object Chess:
           ClientIn.StepFailure
     }
 
+  def apply(req: ClientOut.AnaPass): ClientIn =
+    Monitor.time(_.chessMoveTime) {
+      try
+        chess.Game(req.variant.some, Some(req.fen))
+        .withPassing(true).pass().toOption flatMap {
+          case (game, pass) =>
+            game.pgnMoves.lastOption map { san =>
+              makeNode(game, Uci.WithSan(Uci.Pass(), san), req.path, req.chapterId)
+            }
+        } getOrElse ClientIn.StepFailure
+      catch
+        case e: java.lang.ArrayIndexOutOfBoundsException =>
+          logger.warn(s"${req.fen} ${req.variant} --", e)
+          ClientIn.StepFailure
+    }
+
   def apply(req: ClientOut.AnaDests): ClientIn.Dests =
     Monitor.time(_.chessDestTime) {
       ClientIn.Dests(
